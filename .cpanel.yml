@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/hotelsunplaza/nitscomputer.in/
-    - /bin/cp -R api uploads .htaccess index.html assets $DEPLOYPATH
+    - /bin/cp -R api uploads .htaccess index.html assets images favicon.svg icons.svg $DEPLOYPATH

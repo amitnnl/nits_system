@@ -32,11 +32,18 @@ function copyRecursiveSync(src, dest) {
 console.log('Deploying React application build to XAMPP loginsystem folder...');
 try {
   if (fs.existsSync(srcDir)) {
-    // Copy index.html
-    fs.copyFileSync(path.join(srcDir, 'index.html'), path.join(destDir, 'index.html'));
-    
-    // Copy assets folder
-    copyRecursiveSync(path.join(srcDir, 'assets'), path.join(destDir, 'assets'));
+    const items = fs.readdirSync(srcDir);
+    items.forEach(item => {
+      const srcPath = path.join(srcDir, item);
+      const destPath = path.join(destDir, item);
+      const stat = fs.statSync(srcPath);
+      
+      if (stat.isDirectory()) {
+        copyRecursiveSync(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    });
     
     console.log('React application successfully deployed to parent folder.');
   } else {
