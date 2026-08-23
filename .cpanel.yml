@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/hotelsunplaza/nitscomputer.in/
+    - /bin/cp -R deploy/* $DEPLOYPATH
