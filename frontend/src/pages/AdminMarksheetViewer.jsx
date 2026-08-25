@@ -10,6 +10,20 @@ const AdminMarksheetViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('mark_offsetTop')) || 100);
+  const [textScale, setTextScale] = useState(Number(localStorage.getItem('mark_scale')) || 1);
+
+  const handleOffsetChange = (e) => {
+    const val = Number(e.target.value);
+    setOffsetTop(val);
+    localStorage.setItem('mark_offsetTop', val);
+  };
+  const handleScaleChange = (e) => {
+    const val = Number(e.target.value);
+    setTextScale(val);
+    localStorage.setItem('mark_scale', val);
+  };
+
   useEffect(() => {
     const fetchResult = async () => {
       try {
@@ -58,13 +72,38 @@ const AdminMarksheetViewer = () => {
         {`
           @media print {
             @page {
-              size: A4 portrait !important;
+              size: A4 portrait;
+              margin: 0mm !important;
+            }
+            html, body {
+              width: 100%;
+              height: 100%;
               margin: 0 !important;
+              padding: 0 !important;
+              background-color: white;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .animate-fade-in {
+              transform: none !important;
+              animation: none !important;
+            }
+            .print-area {
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100vw !important;
+              height: 100vh !important;
+              max-width: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              z-index: 9999 !important;
+              box-sizing: border-box !important;
             }
           }
         `}
       </style>
-      <div className="animate-fade-in print-content" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="animate-fade-in print-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="no-print">
           <div>
             <h1 style={{ fontSize: '2.25rem', fontWeight: 700, margin: '0' }}>Print Student Marksheet</h1>
@@ -81,6 +120,24 @@ const AdminMarksheetViewer = () => {
           </div>
         </div>
 
+        {/* Calibration Panel */}
+        <div className="no-print glass-card" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem', alignItems: 'center' }}>
+          <div>
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Top Offset</span>
+              <span style={{ color: 'var(--accent-primary)' }}>{offsetTop}px</span>
+            </label>
+            <input type="range" min="0" max="300" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+          </div>
+          <div>
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Text Scale</span>
+              <span style={{ color: 'var(--accent-primary)' }}>{textScale}x</span>
+            </label>
+            <input type="range" min="0.5" max="1.5" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+          </div>
+        </div>
+
         <div 
           className="print-area" 
           style={{ 
@@ -92,7 +149,8 @@ const AdminMarksheetViewer = () => {
             backgroundColor: '#ffffff',
             color: '#000',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            boxShadow: 'var(--card-shadow)'
         }}>
           {/* Guaranteed Print Background Image */}
           <img 
@@ -109,12 +167,12 @@ const AdminMarksheetViewer = () => {
             }}
           />
 
-          <div style={{ paddingTop: '100px', position: 'relative', zIndex: 1 }}>
+          <div style={{ paddingTop: `${offsetTop}px`, position: 'relative', zIndex: 1, fontSize: `${14 * textScale}px` }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ border: '0px solid black', padding: '5px' }}>
-                <h2 style={{ fontWeight: 700, margin: '0', fontSize: '24px' }}><strong>NITS COMPUTER EDUCATION</strong></h2>
-                <div style={{ marginTop: '5px' }}><h5 style={{ margin: '0', fontSize: '16px', fontWeight: 500 }}>Near Balaji Dental Hospital, Singhana Road, Narnaul-123001(Haryana)</h5></div>
-                <h5 style={{ margin: '5px 0 0 0', fontSize: '16px', fontWeight: 500 }}> Website : www.nitscomputer.in </h5>
+                <h2 style={{ fontWeight: 700, margin: '0', fontSize: `${24 * textScale}px` }}><strong>NITS COMPUTER EDUCATION</strong></h2>
+                <div style={{ marginTop: '5px' }}><h5 style={{ margin: '0', fontSize: `${16 * textScale}px`, fontWeight: 500 }}>Near Balaji Dental Hospital, Singhana Road, Narnaul-123001(Haryana)</h5></div>
+                <h5 style={{ margin: '5px 0 0 0', fontSize: `${16 * textScale}px`, fontWeight: 500 }}> Website : www.nitscomputer.in </h5>
               </div>
             </div>
 
@@ -149,11 +207,11 @@ const AdminMarksheetViewer = () => {
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div style={{ width: '66.666%' }}>
-                <h5 style={{ textAlign: 'center', paddingTop: '20px', fontSize: '18px', margin: '0 0 10px 0' }}>
+                <h5 style={{ textAlign: 'center', paddingTop: '20px', fontSize: `${18 * textScale}px`, margin: '0 0 10px 0' }}>
                   <strong>Statement of Marks</strong>
                 </h5>
                 <div>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #dee2e6', fontSize: '14px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #dee2e6', fontSize: `${14 * textScale}px` }}>
                     <thead>
                       <tr>
                         <th style={{ border: '1px solid #dee2e6', padding: '6px', backgroundColor: 'transparent' }}>Subject's</th>

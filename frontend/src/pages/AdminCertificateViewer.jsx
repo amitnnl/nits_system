@@ -12,6 +12,10 @@ const AdminCertificateViewer = () => {
   const [error, setError] = useState('');
   const [endingDate, setEndingDate] = useState('');
 
+  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('cert_offsetTop')) || 270);
+  const [lineGap, setLineGap] = useState(Number(localStorage.getItem('cert_gap')) || 14);
+  const [textScale, setTextScale] = useState(Number(localStorage.getItem('cert_scale')) || 1);
+
   useEffect(() => {
     const fetchProfileAndResult = async () => {
       try {
@@ -64,6 +68,23 @@ const AdminCertificateViewer = () => {
     return '3 (Three) Months';
   };
 
+  // Handlers for calibration
+  const handleOffsetChange = (e) => {
+    const val = Number(e.target.value);
+    setOffsetTop(val);
+    localStorage.setItem('cert_offsetTop', val);
+  };
+  const handleGapChange = (e) => {
+    const val = Number(e.target.value);
+    setLineGap(val);
+    localStorage.setItem('cert_gap', val);
+  };
+  const handleScaleChange = (e) => {
+    const val = Number(e.target.value);
+    setTextScale(val);
+    localStorage.setItem('cert_scale', val);
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -91,13 +112,38 @@ const AdminCertificateViewer = () => {
         {`
           @media print {
             @page {
-              size: A4 landscape !important;
+              size: A4 landscape;
+              margin: 0mm !important;
+            }
+            html, body {
+              width: 100%;
+              height: 100%;
               margin: 0 !important;
+              padding: 0 !important;
+              background-color: white;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .animate-fade-in {
+              transform: none !important;
+              animation: none !important;
+            }
+            .print-area {
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100vw !important;
+              height: 100vh !important;
+              max-width: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              z-index: 9999 !important;
+              box-sizing: border-box !important;
             }
           }
         `}
       </style>
-      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="no-print">
           <div>
             <h1 style={{ fontSize: '2.25rem', fontWeight: 700, margin: '0' }}>Print Student Certificate</h1>
@@ -113,6 +159,31 @@ const AdminCertificateViewer = () => {
           </div>
         </div>
 
+        {/* Calibration Panel */}
+        <div className="no-print glass-card" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', alignItems: 'center' }}>
+          <div>
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Top Offset</span>
+              <span style={{ color: 'var(--accent-primary)' }}>{offsetTop}px</span>
+            </label>
+            <input type="range" min="150" max="400" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+          </div>
+          <div>
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Line Spacing</span>
+              <span style={{ color: 'var(--accent-primary)' }}>{lineGap}px</span>
+            </label>
+            <input type="range" min="0" max="40" value={lineGap} onChange={handleGapChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+          </div>
+          <div>
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Text Scale</span>
+              <span style={{ color: 'var(--accent-primary)' }}>{textScale}x</span>
+            </label>
+            <input type="range" min="0.5" max="1.5" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+          </div>
+        </div>
+
         <div 
           className="print-area"
           style={{
@@ -125,7 +196,8 @@ const AdminCertificateViewer = () => {
             color: '#000',
             position: 'relative',
             overflow: 'hidden',
-            display: 'block'
+            display: 'block',
+            boxShadow: 'var(--card-shadow)'
           }}
         >
           {/* Guaranteed Print Background Image */}
@@ -148,7 +220,7 @@ const AdminCertificateViewer = () => {
             zIndex: 1,
             width: '100%',
             height: '100%',
-            paddingTop: '240px', /* Reduced to pull text up slightly */
+            paddingTop: `${offsetTop}px`, 
             textAlign: 'center',
             fontFamily: "'Lucida Calligraphy', Times, serif"
           }}>
@@ -158,38 +230,38 @@ const AdminCertificateViewer = () => {
               padding: '0 20px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '8px', /* Tighter gap to prevent vertical overflow */
+              gap: `${lineGap}px`, 
               color: '#1a202c'
             }}>
-              <div style={{ fontSize: '18px', color: '#4a5568' }}>
+              <div style={{ fontSize: `${18 * textScale}px`, color: '#4a5568' }}>
                 <span style={{ fontWeight: 'bold' }}>Enrollment Number :</span> Nits_{profile?.reg_number}
               </div>
               
-              <div style={{ fontSize: '24px' }}>
+              <div style={{ fontSize: `${24 * textScale}px` }}>
                 Mr. / Ms. <span style={{ fontWeight: 'bold', color: '#90764f' }}>{profile?.fname} {profile?.lname}</span> , 
                 Son / Daughter of <span style={{ fontWeight: 'bold' }}>{profile?.father}</span>
               </div>
 
-              <div style={{ fontSize: '20px' }}>
+              <div style={{ fontSize: `${20 * textScale}px` }}>
                 Has successfully completed the Course
               </div>
               
-              <div style={{ fontSize: '26px', fontWeight: 'bold', color: '#1e3a8a', letterSpacing: '1px' }}>
+              <div style={{ fontSize: `${26 * textScale}px`, fontWeight: 'bold', color: '#1e3a8a', letterSpacing: '1px' }}>
                 {profile?.course}
               </div>
 
-              <div style={{ fontSize: '18px' }}>
+              <div style={{ fontSize: `${18 * textScale}px` }}>
                 from <span style={{ fontWeight: 'bold' }}>{profile?.posting_date}</span> to <span style={{ fontWeight: 'bold' }}>{endingDate}</span> at our institute with <span style={{ fontWeight: 'bold' }}>"A"</span> Grade.
               </div>
 
-              <div style={{ fontSize: '18px' }}>
+              <div style={{ fontSize: `${18 * textScale}px` }}>
                 Duration <span style={{ fontWeight: 'bold' }}>{getDurationText()}</span>
               </div>
             </div>
 
             {/* Absolute positioned Date & Place to perfectly align with template footer */}
             <div style={{ position: 'absolute', bottom: '13%', left: '18%', textAlign: 'left' }}>
-              <h5 style={{ fontSize: '15px', color: '#90764f', lineHeight: '1.6', margin: '0', fontWeight: 'bold' }}>
+              <h5 style={{ fontSize: `${15 * textScale}px`, color: '#90764f', lineHeight: '1.6', margin: '0', fontWeight: 'bold' }}>
                 Date on : <br />
                 Place : Narnaul (Haryana)
               </h5>
@@ -197,7 +269,7 @@ const AdminCertificateViewer = () => {
 
             {/* Absolute positioned Authorised Signatory to perfectly align with template footer */}
             <div style={{ position: 'absolute', bottom: '13%', right: '18%', textAlign: 'right' }}>
-              <h5 style={{ fontSize: '15px', color: '#90764f', lineHeight: '1.6', margin: '0', fontWeight: 'bold' }}>
+              <h5 style={{ fontSize: `${15 * textScale}px`, color: '#90764f', lineHeight: '1.6', margin: '0', fontWeight: 'bold' }}>
                 <br />
                 Authorised Signatory
               </h5>
