@@ -10,8 +10,8 @@ const AdminMarksheetViewer = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('mark_offsetTop')) || 100);
-  const [textScale, setTextScale] = useState(Number(localStorage.getItem('mark_scale')) || 1);
+  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('mark_offsetTop')) || 260);
+  const [textScale, setTextScale] = useState(Number(localStorage.getItem('mark_scale')) || 1.05);
 
   const handleOffsetChange = (e) => {
     const val = Number(e.target.value);
@@ -123,18 +123,12 @@ const AdminMarksheetViewer = () => {
         {/* Calibration Panel */}
         <div className="no-print glass-card" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem', alignItems: 'center' }}>
           <div>
-            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Top Offset</span>
-              <span style={{ color: 'var(--accent-primary)' }}>{offsetTop}px</span>
-            </label>
-            <input type="range" min="0" max="300" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <label className="form-label">Top Offset (px)</label>
+            <input type="number" className="form-control" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
           </div>
           <div>
-            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Text Scale</span>
-              <span style={{ color: 'var(--accent-primary)' }}>{textScale}x</span>
-            </label>
-            <input type="range" min="0.5" max="1.5" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <label className="form-label">Text Scale (x)</label>
+            <input type="number" className="form-control" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
           </div>
         </div>
 

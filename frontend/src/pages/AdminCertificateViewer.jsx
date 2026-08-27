@@ -12,9 +12,9 @@ const AdminCertificateViewer = () => {
   const [error, setError] = useState('');
   const [endingDate, setEndingDate] = useState('');
 
-  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('cert_offsetTop')) || 270);
-  const [lineGap, setLineGap] = useState(Number(localStorage.getItem('cert_gap')) || 14);
-  const [textScale, setTextScale] = useState(Number(localStorage.getItem('cert_scale')) || 1);
+  const [offsetTop, setOffsetTop] = useState(Number(localStorage.getItem('cert_offsetTop')) || 260);
+  const [lineGap, setLineGap] = useState(Number(localStorage.getItem('cert_gap')) || 16);
+  const [textScale, setTextScale] = useState(Number(localStorage.getItem('cert_scale')) || 1.05);
 
   useEffect(() => {
     const fetchProfileAndResult = async () => {
@@ -162,25 +162,16 @@ const AdminCertificateViewer = () => {
         {/* Calibration Panel */}
         <div className="no-print glass-card" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem', alignItems: 'center' }}>
           <div>
-            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Top Offset</span>
-              <span style={{ color: 'var(--accent-primary)' }}>{offsetTop}px</span>
-            </label>
-            <input type="range" min="150" max="400" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <label className="form-label">Top Offset (px)</label>
+            <input type="number" className="form-control" value={offsetTop} onChange={handleOffsetChange} style={{ width: '100%', marginTop: '0.5rem' }} />
           </div>
           <div>
-            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Line Spacing</span>
-              <span style={{ color: 'var(--accent-primary)' }}>{lineGap}px</span>
-            </label>
-            <input type="range" min="0" max="40" value={lineGap} onChange={handleGapChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <label className="form-label">Line Spacing (px)</label>
+            <input type="number" className="form-control" value={lineGap} onChange={handleGapChange} style={{ width: '100%', marginTop: '0.5rem' }} />
           </div>
           <div>
-            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Text Scale</span>
-              <span style={{ color: 'var(--accent-primary)' }}>{textScale}x</span>
-            </label>
-            <input type="range" min="0.5" max="1.5" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
+            <label className="form-label">Text Scale (x)</label>
+            <input type="number" className="form-control" step="0.01" value={textScale} onChange={handleScaleChange} style={{ width: '100%', marginTop: '0.5rem' }} />
           </div>
         </div>
 
